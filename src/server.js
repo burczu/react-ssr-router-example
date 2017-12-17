@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
+import { StaticRouter } from 'react-router';
 
 import Html from './components/Html';
 import App from './components/App';
@@ -14,8 +15,13 @@ app.get('*', async (req, res) => {
   const scripts = ['vendor.js', 'client.js'];
 
   const initialState = { initialText: "rendered on the server" };
+  const context = {};
 
-  const appMarkup = ReactDOMServer.renderToString(<App {...initialState} />);
+  const appMarkup = ReactDOMServer.renderToString((
+    <StaticRouter location={req.url} context={context}>
+      <App {...initialState} />
+    </StaticRouter>
+  ));
   const html = ReactDOMServer.renderToStaticMarkup(<Html children={appMarkup} scripts={scripts} initialState={initialState} />);
 
   res.send(`<!doctype html>${html}`);
